@@ -1,25 +1,97 @@
 package datastructures.lists;
 
 import datastructures.deques.Deque;
+import datastructures.deques.queues.Queue;
 import datastructures.deques.stacks.Stack;
 
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.Objects;
 import java.util.stream.IntStream;
 
-public class ArrayList<T> implements List<T>, Stack<T>, Deque<T> {
+public class ArrayList<T> implements List<T>, Stack<T>, Queue<T>, Deque<T> {
 
-    private static final int initialSize = 16;
+    private final int initialSize;
 
     private T[] elements;
     private int size = 0;
     @SuppressWarnings("unchecked")
     public ArrayList(){
-        elements = (T[]) new Object[initialSize];
+        elements = (T[]) new Object[initialSize = 16];
     }
     @SuppressWarnings("unchecked")
     public ArrayList(int initialSize) {
+        this.initialSize = initialSize;
         elements = (T[]) new Object[initialSize];
+    }
+
+    @Override
+    public void addFirst(T element) {
+        insert(0, element);
+    }
+
+    @Override
+    public void addLast(T element) {
+        add(element);
+    }
+
+    @Override
+    public T removeFirst() {
+        if(isEmpty())
+            throw new IllegalStateException("Deque is empty");
+        return remove(0);
+    }
+
+    @Override
+    public T removeLast() {
+        if(isEmpty())
+            throw new IllegalStateException("Deque is empty");
+        return remove(size - 1);
+    }
+
+    @Override
+    public T peekFirst() {
+        if(isEmpty())
+            throw new IllegalStateException("Deque is empty");
+        return get(0);
+    }
+
+    @Override
+    public T peekLast() {
+        if(isEmpty())
+            throw new IllegalStateException("Deque is empty");
+        return get(size - 1);
+    }
+
+    @Override
+    public void enqueue(T element) {
+        insert(0, element);
+    }
+
+    @Override
+    public T dequeue() {
+        if(isEmpty())
+            throw new IllegalStateException("Queue is empty");
+        return remove(size - 1);
+    }
+
+    @Override
+    public void push(T element) {
+        add(element);
+    }
+
+    @Override
+    public T pop() {
+        if(isEmpty())
+            throw new IllegalStateException("Stack is empty");
+        return remove(size - 1);
+    }
+
+    @Override
+    public T peek() {
+        if(isEmpty())
+            throw new IllegalStateException("Stack is empty");
+        return elements[size - 1];
     }
 
     @Override
@@ -65,7 +137,7 @@ public class ArrayList<T> implements List<T>, Stack<T>, Deque<T> {
     @Override
     public void set(int index, T element) {
         if(isOutOfBounds(index))
-            throw new NullPointerException("Index " + index + " out of bounds for range 0 to " + size);
+            throw new IndexOutOfBoundsException("Index " + index + " out of bounds for range 0 to " + size);
         elements[index] = element;
     }
 
@@ -84,14 +156,14 @@ public class ArrayList<T> implements List<T>, Stack<T>, Deque<T> {
     @Override
     public T get(int index) {
         if(isOutOfBounds(index))
-            throw new NullPointerException("Index " + index + " out of bounds for range 0 to " + size);
+            throw new IndexOutOfBoundsException("Index " + index + " out of bounds for range 0 to " + size);
         return elements[index];
     }
 
     @Override
     public T remove(int index) {
         if(isOutOfBounds(index))
-            throw new NullPointerException("Index " + index + " out of bounds for range 0 to " + size);
+            throw new IndexOutOfBoundsException("Index " + index + " out of bounds for range 0 to " + size);
         pushTrailingElements(index + 1, index);
         T tmp = elements[size - 1];
         elements[--size] = null;
@@ -120,21 +192,6 @@ public class ArrayList<T> implements List<T>, Stack<T>, Deque<T> {
     }
 
     @Override
-    public void push(T element) {
-        addLast(element);
-    }
-
-    @Override
-    public T pop() {
-        return removeLast();
-    }
-
-    @Override
-    public T peek() {
-        return get(size - 1);
-    }
-
-    @Override
     public boolean contains(T element) {
         for(T t : this)
             if(t.equals(element)) return true;
@@ -156,26 +213,6 @@ public class ArrayList<T> implements List<T>, Stack<T>, Deque<T> {
         for(T element : this)
             sb.append(element).append(", ");
         return sb.substring(0, sb.length() - 2) + "]";
-    }
-
-    @Override
-    public void addFirst(T element) {
-        insert(0, element);
-    }
-
-    @Override
-    public void addLast(T element) {
-        add(element);
-    }
-
-    @Override
-    public T removeFirst() {
-        return remove(0);
-    }
-
-    @Override
-    public T removeLast() {
-        return remove(size - 1);
     }
 
     @Override
@@ -201,10 +238,9 @@ public class ArrayList<T> implements List<T>, Stack<T>, Deque<T> {
 
     @Override
     public int hashCode() {
-        int hash = 0;
-        for (int i = 0; i < size; i++)
-            hash += Objects.hashCode(get(i)) * i;
-        return hash;
+        int result = Objects.hash(initialSize, size);
+        result = 31 * result + Arrays.hashCode(elements);
+        return result;
     }
 
     @Override

@@ -1,12 +1,12 @@
 package datastructures.deques.stacks;
 
-public interface Stack<T> extends Iterable<T>{
+import datastructures.DataStructure;
 
+public interface Stack<T> extends Iterable<T>, DataStructure {
     void push(T element);
     T pop();
     T peek();
-    boolean contains(T element);
-    boolean isEmpty();
     int size();
-
+    boolean isEmpty();
+    boolean contains(T element);
 }

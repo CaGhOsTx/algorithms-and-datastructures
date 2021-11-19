@@ -1,26 +1,23 @@
-import datastructures.lists.ArrayList;
-import datastructures.lists.List;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Nested;
-import org.junit.jupiter.api.Test;
+import datastructures.lists.*;
+import org.junit.jupiter.api.*;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
 import java.lang.reflect.Field;
 
-public class ArrayListTest {
-    List<Integer> list;
+public class ListTest {
+    List<Object> list;
+
     @BeforeEach
     void setUp() {
-        list = new ArrayList<>();
+        list = new CircularLinkedList<>();
         list.addAll(1,2,3,4,5);
     }
 
     @Test
     void addTest() {
         list.add(1);
-        Assertions.assertEquals("[1, 2, 3, 4, 5, 1]", list.toString());
+        Assertions.assertEquals("[1, 2, 3, 4, 5, 1]", this.list.toString());
     }
 
     @Test
@@ -37,17 +34,17 @@ public class ArrayListTest {
 
     @Test
     void equalsTest() {
-        Assertions.assertNotEquals(list, List.of(1));
+        Assertions.assertNotEquals(list, List.of(ArrayList::new,1));
         Assertions.assertNotEquals(list, null);
         Assertions.assertNotEquals(list, new Object());
-        Assertions.assertEquals(List.of(1,2,3), List.of(1,2,3));
+        Assertions.assertEquals(List.of(ArrayList::new,1,2,3), List.of(ArrayList::new,1,2,3));
     }
 
     @Nested
     class InnerArrayTester {
-        Field f = ArrayList.class.getDeclaredField("elements");;
-
-        InnerArrayTester() throws NoSuchFieldException, IllegalAccessException {
+        Field f;
+        InnerArrayTester() throws NoSuchFieldException {
+            f = ArrayList.class.getDeclaredField("elements");
             f.setAccessible(true);
         }
 
@@ -58,7 +55,7 @@ public class ArrayListTest {
         }
 
         @Test
-        void initialSizeTest() throws NoSuchFieldException, IllegalAccessException {
+        void initialSizeTest() throws IllegalAccessException {
             list.clear();
             Assertions.assertEquals(8, ((Object[]) f.get(list)).length);
         }
@@ -78,10 +75,10 @@ public class ArrayListTest {
     }
 
     @Test
+    @Disabled
     void hashCodeTest() {
-        Assertions.assertNotEquals(list.hashCode(), List.of(1,2,4,3,5).hashCode());
-        Assertions.assertEquals(list.hashCode(), List.of(1,2,3,4,5).hashCode());
-
+        Assertions.assertNotEquals(list.hashCode(), List.of(CircularLinkedList::new, 1,2,4,3,5).hashCode());
+        Assertions.assertEquals(list.hashCode(), List.of(CircularLinkedList::new,1,2,3,4,5).hashCode());
     }
 
     @Test
@@ -140,19 +137,19 @@ public class ArrayListTest {
         @ParameterizedTest
         @ValueSource(ints = {-5, -1, 5, 6})
         void setOutOfBoundsTest(int index) {
-            Assertions.assertThrows(NullPointerException.class, () -> list.set(index, 5));
+            Assertions.assertThrows(IndexOutOfBoundsException.class, () -> list.set(index, 5));
         }
 
         @ParameterizedTest
         @ValueSource(ints = {-5, -1, 5, 6})
         void removeOutOfBoundsTest(int index) {
-            Assertions.assertThrows(NullPointerException.class, () -> list.remove(index));
+            Assertions.assertThrows(IndexOutOfBoundsException.class, () -> list.remove(index));
         }
 
         @ParameterizedTest
         @ValueSource(ints = {-5, -1, 5, 6})
         void getOutOfBoundsTest(int index) {
-            Assertions.assertThrows(NullPointerException.class, () -> list.get(index));
+            Assertions.assertThrows(IndexOutOfBoundsException.class, () -> list.get(index));
         }
     }
 }

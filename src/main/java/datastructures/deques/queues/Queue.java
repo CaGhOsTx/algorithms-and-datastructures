@@ -1,11 +1,12 @@
 package datastructures.deques.queues;
 
-public interface Queue<T> extends Iterable<T> {
+import datastructures.DataStructure;
+
+public interface Queue<T> extends Iterable<T>, DataStructure {
     void enqueue(T element);
     T dequeue();
     T peek();
-    boolean contains(T element);
-    boolean isEmpty();
-    void clear();
     int size();
+    boolean isEmpty();
+    boolean contains(T element);
 }
