@@ -57,8 +57,13 @@ public class DoublyLinkedList<T> implements List<T>, Stack<T>, Queue<T>, Deque<T
         if(isEmpty())
             throw new IllegalStateException("List is empty");
         var el = head.element;
-        head.next.previous = null;
-        head = head.next;
+        if(head.next == null) {
+            head = tail = null;
+        }
+        else {
+            head.next.previous = null;
+            head = head.next;
+        }
         size--;
         return el;
     }
@@ -68,8 +73,13 @@ public class DoublyLinkedList<T> implements List<T>, Stack<T>, Queue<T>, Deque<T
         if(isEmpty())
             throw new IllegalStateException("List is empty");
         var el = tail.element;
-        tail.previous.next = null;
-        tail = tail.previous;
+        if(tail.previous == null) {
+            head = tail = null;
+        }
+        else {
+            tail.previous.next = null;
+            tail = tail.previous;
+        }
         size--;
         return el;
     }
