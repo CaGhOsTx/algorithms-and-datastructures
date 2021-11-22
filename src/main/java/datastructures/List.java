@@ -1,10 +1,10 @@
-package datastructures.lists;
+package datastructures;
 
-import datastructures.DataStructure;
+import datastructures.lists.ArrayList;
 
 import java.util.function.Supplier;
 
-public interface List<T> extends Iterable<T>, DataStructure {
+public interface List<T> extends DataStructure<T> {
     int size();
     void add(T element);
     @SuppressWarnings("unchecked") void addAll(T... elements);
@@ -29,8 +29,7 @@ public interface List<T> extends Iterable<T>, DataStructure {
     @SafeVarargs
     static <T, C extends List<T>> List<T> of(T... elements) {
         List<T> list = new ArrayList<>();
-        for(T t : elements)
-            list.add(t);
+        list.addAll(elements);
         return list;
     }
 }

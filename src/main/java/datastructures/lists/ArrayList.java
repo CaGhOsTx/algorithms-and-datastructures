@@ -1,11 +1,13 @@
 package datastructures.lists;
 
-import datastructures.deques.Deque;
-import datastructures.deques.queues.Queue;
-import datastructures.deques.stacks.Stack;
+import datastructures.Deque;
+import datastructures.List;
+import datastructures.Queue;
+import datastructures.Stack;
 
 import java.util.Arrays;
 import java.util.Iterator;
+import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.stream.IntStream;
 
@@ -65,33 +67,33 @@ public class ArrayList<T> implements List<T>, Stack<T>, Queue<T>, Deque<T> {
 
     @Override
     public void enqueue(T element) {
-        insert(0, element);
+        add(element);
     }
 
     @Override
     public T dequeue() {
         if(isEmpty())
             throw new IllegalStateException("Queue is empty");
-        return remove(size - 1);
+        return remove(0);
     }
 
     @Override
     public void push(T element) {
-        add(element);
+        insert(0, element);
     }
 
     @Override
     public T pop() {
         if(isEmpty())
             throw new IllegalStateException("Stack is empty");
-        return remove(size - 1);
+        return remove(0);
     }
 
     @Override
     public T peek() {
         if(isEmpty())
             throw new IllegalStateException("Stack is empty");
-        return elements[size - 1];
+        return elements[0];
     }
 
     @Override
@@ -163,7 +165,7 @@ public class ArrayList<T> implements List<T>, Stack<T>, Queue<T>, Deque<T> {
     @Override
     public T remove(int index) {
         if(isOutOfBounds(index))
-            throw new IndexOutOfBoundsException("Index " + index + " out of bounds for range 0 to " + size);
+            throw new IllegalStateException("Index " + index + " out of bounds for range 0 to " + size);
         pushTrailingElements(index + 1, index);
         T tmp = elements[size - 1];
         elements[--size] = null;
@@ -203,7 +205,7 @@ public class ArrayList<T> implements List<T>, Stack<T>, Queue<T>, Deque<T> {
         return IntStream.range(0,size)
                 .filter(i -> get(i).equals(element))
                 .findFirst()
-                .orElseThrow();
+                .orElseThrow(NoSuchElementException::new);
     }
     @Override
     public String toString() {

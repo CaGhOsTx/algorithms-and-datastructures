@@ -1,8 +1,8 @@
-package datastructures.deques;
+package datastructures;
 
 import datastructures.DataStructure;
 
-public interface Deque<T> extends Iterable<T>, DataStructure {
+public interface Deque<T> extends DataStructure<T> {
     void addFirst(T element);
     void addLast(T element);
     T removeFirst();

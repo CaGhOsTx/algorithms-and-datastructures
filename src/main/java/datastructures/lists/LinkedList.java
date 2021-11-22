@@ -1,12 +1,13 @@
 package datastructures.lists;
 
-import datastructures.deques.Deque;
-import datastructures.deques.stacks.Stack;
+import datastructures.Deque;
+import datastructures.List;
+import datastructures.Queue;
+import datastructures.Stack;
 
 import java.util.Iterator;
+import java.util.NoSuchElementException;
 import java.util.Objects;
-
-import datastructures.deques.queues.Queue;
 
 public class LinkedList<T> implements List<T>, Stack<T>, Queue<T>, Deque<T> {
 
@@ -38,7 +39,8 @@ public class LinkedList<T> implements List<T>, Stack<T>, Queue<T>, Deque<T> {
 
     @Override
     public void addFirst(T element) {
-        insert(0, element);
+        head = new Node<>(element, head);
+        size++;
     }
 
     @Override
@@ -50,7 +52,10 @@ public class LinkedList<T> implements List<T>, Stack<T>, Queue<T>, Deque<T> {
     public T removeFirst() {
         if(isEmpty())
             throw new IllegalStateException("Deque is empty");
-        return remove(0);
+        var el = head.element;
+        head = head.next;
+        size--;
+        return el;
     }
 
     @Override
@@ -76,33 +81,33 @@ public class LinkedList<T> implements List<T>, Stack<T>, Queue<T>, Deque<T> {
 
     @Override
     public void enqueue(T element) {
-        insert(0, element);
+        addLast(element);
     }
 
     @Override
     public T dequeue() {
         if(isEmpty())
             throw new IllegalStateException("Queue is empty");
-        return remove(size - 1);
+        return removeFirst();
     }
 
     @Override
     public void push(T element) {
-        add(element);
+        addFirst(element);
     }
 
     @Override
     public T pop() {
         if(isEmpty())
             throw new IllegalStateException("Stack is empty");
-        return remove(size - 1);
+        return removeFirst();
     }
 
     @Override
     public T peek() {
         if(isEmpty())
             throw new IllegalStateException("Stack is empty");
-        return get(size - 1);
+        return head.element;
     }
 
     @Override
@@ -145,10 +150,15 @@ public class LinkedList<T> implements List<T>, Stack<T>, Queue<T>, Deque<T> {
     @Override
     public void insert(int index, T element) {
         checkForOutOfBounds(index);
-        var tmp = head;
-        for (int i = 0; i < index - 1; i++)
-            tmp = tmp.next;
-        tmp.next = new Node<>(element, tmp.next);
+        if(index == 0)
+            addFirst(element);
+        else {
+            var tmp = head;
+            for (int i = 0; i < index - 1; i++)
+                tmp = tmp.next;
+            tmp.next = new Node<>(element, tmp.next);
+            size++;
+        }
     }
 
     @Override
@@ -164,10 +174,18 @@ public class LinkedList<T> implements List<T>, Stack<T>, Queue<T>, Deque<T> {
     @Override
     public T remove(int index) {
         checkForOutOfBounds(index);
+        if(index == 0 || size == 1) return removeFirst();
         var tmp = head;
         for (int i = 0; i < index - 1; i++)
-               tmp = tmp.next;
-        return removeCurrent(tmp);
+            tmp = tmp.next;
+        return removeNext(tmp);
+    }
+
+    private T removeNext(Node<T> tmp) {
+        var el = tmp.next.element;
+        tmp.next = tmp.next.next;
+        size--;
+        return el;
     }
 
     @Override
@@ -175,32 +193,23 @@ public class LinkedList<T> implements List<T>, Stack<T>, Queue<T>, Deque<T> {
         return size == 0;
     }
 
-    private T removeCurrent(Node<T> node) {
-        var tmpNext = node.next.next;
-        var el = node.next.element;
-        node.next.next = null;
-        node.next = tmpNext;
-        size--;
-        return el;
-    }
-
     @Override
     public void removeAll(T element) {
         var tmp = head;
         for (int i = 0; i < size - 1; i++) {
             if(tmp.next.element.equals(element))
-                removeCurrent(tmp);
+                removeNext(tmp);
             tmp = tmp.next;
         }
     }
 
     private void checkForOutOfBounds(int index) {
         if(isOutOfBounds(index))
-            throw new IndexOutOfBoundsException(String.format("index %d is out of bounds for length %d%n", index, size));
+            throw new IllegalStateException(String.format("index %d is out of bounds for length %d%n", index, size));
     }
 
     private boolean isOutOfBounds(int index) {
-        return index < 0 || index >= size;
+        return index < 0 || index > size;
     }
 
     @Override
@@ -248,7 +257,7 @@ public class LinkedList<T> implements List<T>, Stack<T>, Queue<T>, Deque<T> {
                 return i;
             tmp = tmp.next;
         }
-        throw new IllegalStateException("list does not contain " + element);
+        throw new NoSuchElementException("list does not contain " + element);
     }
 
     @Override

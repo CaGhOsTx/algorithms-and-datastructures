@@ -1,10 +1,12 @@
 package datastructures.lists;
 
-import datastructures.deques.Deque;
-import datastructures.deques.queues.Queue;
-import datastructures.deques.stacks.Stack;
+import datastructures.Deque;
+import datastructures.List;
+import datastructures.Queue;
+import datastructures.Stack;
 
 import java.util.Iterator;
+import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -116,6 +118,8 @@ public class DoublyLinkedList<T> implements List<T>, Stack<T>, Queue<T>, Deque<T
 
     @Override
     public T peek() {
+        if(isEmpty())
+            throw new IllegalStateException("Queue is empty");
         return head.element;
     }
 
@@ -162,7 +166,7 @@ public class DoublyLinkedList<T> implements List<T>, Stack<T>, Queue<T>, Deque<T
 
     private void checkForOutOfBounds(int index) {
         if(isOutOfBounds(index))
-            throw new IndexOutOfBoundsException(String.format("index %d is out of bounds for length %d%n", index, size));
+            throw new IllegalStateException(String.format("index %d is out of bounds for length %d%n", index, size));
     }
 
     private boolean isOutOfBounds(int index) {
@@ -188,13 +192,19 @@ public class DoublyLinkedList<T> implements List<T>, Stack<T>, Queue<T>, Deque<T
 
     @Override
     public void insert(int index, T element) {
-        optimalTraverse(index, element,
-                tmp -> {
-                    size++;
-                    var node = new Node<>(element, tmp, tmp.previous);
-                    if(tmp.previous != null) tmp.previous.next = node;
-                    tmp.previous = node;
-                });
+        if(index == 0)
+            addFirst(element);
+        else if(index == size)
+            addLast(element);
+        else {
+            optimalTraverse(index, element,
+                    tmp -> {
+                        size++;
+                        var node = new Node<>(element, tmp, tmp.previous);
+                        if (tmp.previous != null) tmp.previous.next = node;
+                        tmp.previous = node;
+                    });
+        }
     }
 
     @Override
@@ -205,11 +215,17 @@ public class DoublyLinkedList<T> implements List<T>, Stack<T>, Queue<T>, Deque<T
     @Override
     public T remove(int index) {
         return optimalTraverse(index, n -> {
-            size--;
             var el = n.element;
-            if(n.previous != null) n.previous.next = n.next;
-            if(n.next != null) n.next.previous = n.previous;
+            if(n.previous == null)
+                return removeFirst();
+            else
+                n.previous.next = n.next;
+            if(n.next == null)
+                return removeLast();
+            else
+                n.next.previous = n.previous;
             n.next = n.previous = null;
+            size--;
             return el;
         });
     }
@@ -241,7 +257,6 @@ public class DoublyLinkedList<T> implements List<T>, Stack<T>, Queue<T>, Deque<T
 
     @Override
     public void clear() {
-        tail.previous = head.next = null;
         head = tail = null;
         size = 0;
     }
@@ -273,7 +288,7 @@ public class DoublyLinkedList<T> implements List<T>, Stack<T>, Queue<T>, Deque<T
             if(element.equals(this.get(i)))
                 return i;
         }
-        throw new IllegalStateException("list does not contain " + element);
+        throw new NoSuchElementException("list does not contain " + element);
     }
 
     @Override

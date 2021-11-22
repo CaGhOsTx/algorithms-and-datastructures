@@ -1,4 +1,4 @@
-package datastructures.deques.queues;
+package datastructures;
 
 public interface PriorityQueue<T extends Comparable<T>> extends Queue<T> {
     @Override
