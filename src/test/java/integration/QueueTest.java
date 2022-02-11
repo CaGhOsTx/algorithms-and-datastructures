@@ -1,4 +1,4 @@
-package tests;
+package integration;
 
 import datastructures.Queue;
 import org.testng.annotations.BeforeMethod;

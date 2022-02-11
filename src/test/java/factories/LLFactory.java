@@ -1,11 +1,10 @@
 package factories;
 
-import datastructures.lists.ArrayList;
 import datastructures.lists.LinkedList;
 import org.testng.annotations.Factory;
-import tests.ListTest;
-import tests.QueueTest;
-import tests.StackTest;
+import integration.ListTest;
+import integration.QueueTest;
+import integration.StackTest;
 
 public class LLFactory {
     @Factory

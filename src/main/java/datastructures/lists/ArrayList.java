@@ -1,9 +1,6 @@
 package datastructures.lists;
 
-import datastructures.Deque;
-import datastructures.List;
-import datastructures.Queue;
-import datastructures.Stack;
+import datastructures.*;
 
 import java.util.Arrays;
 import java.util.Iterator;
@@ -11,20 +8,27 @@ import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.stream.IntStream;
 
-public class ArrayList<T> implements List<T>, Stack<T>, Queue<T>, Deque<T> {
+public class ArrayList<T> implements Stack<T>, Queue<T>, Deque<T>, List<T> {
 
     private final int initialSize;
-
     private T[] elements;
     private int size = 0;
+
     @SuppressWarnings("unchecked")
-    public ArrayList(){
+    public ArrayList() {
         elements = (T[]) new Object[initialSize = 16];
     }
+
     @SuppressWarnings("unchecked")
     public ArrayList(int initialSize) {
         this.initialSize = initialSize;
         elements = (T[]) new Object[initialSize];
+    }
+
+    @Override
+    public void addAll(DataStructure<T> ds) {
+        for (T t : ds)
+            add(t);
     }
 
     @Override
@@ -39,28 +43,28 @@ public class ArrayList<T> implements List<T>, Stack<T>, Queue<T>, Deque<T> {
 
     @Override
     public T removeFirst() {
-        if(isEmpty())
+        if (isEmpty())
             throw new IllegalStateException("Deque is empty");
         return remove(0);
     }
 
     @Override
     public T removeLast() {
-        if(isEmpty())
+        if (isEmpty())
             throw new IllegalStateException("Deque is empty");
         return remove(size - 1);
     }
 
     @Override
     public T peekFirst() {
-        if(isEmpty())
+        if (isEmpty())
             throw new IllegalStateException("Deque is empty");
         return get(0);
     }
 
     @Override
     public T peekLast() {
-        if(isEmpty())
+        if (isEmpty())
             throw new IllegalStateException("Deque is empty");
         return get(size - 1);
     }
@@ -72,7 +76,7 @@ public class ArrayList<T> implements List<T>, Stack<T>, Queue<T>, Deque<T> {
 
     @Override
     public T dequeue() {
-        if(isEmpty())
+        if (isEmpty())
             throw new IllegalStateException("Queue is empty");
         return remove(0);
     }
@@ -84,14 +88,14 @@ public class ArrayList<T> implements List<T>, Stack<T>, Queue<T>, Deque<T> {
 
     @Override
     public T pop() {
-        if(isEmpty())
+        if (isEmpty())
             throw new IllegalStateException("Stack is empty");
         return remove(0);
     }
 
     @Override
     public T peek() {
-        if(isEmpty())
+        if (isEmpty())
             throw new IllegalStateException("Stack is empty");
         return elements[0];
     }
@@ -103,16 +107,16 @@ public class ArrayList<T> implements List<T>, Stack<T>, Queue<T>, Deque<T> {
 
     @Override
     public void add(T element) {
-        ensureCapacity();
-        elements[size++] = element;
+        insert(size, element);
     }
 
-    private void ensureCapacity() {
-        if(isFull())
+    void ensureCapacity() {
+        if (isFull())
             resize(elements.length << 1);
-        else if(isHalfFullAndGreaterThanInitialSize())
+        else if (isHalfFullAndGreaterThanInitialSize())
             resize(elements.length >> 1);
     }
+
     @SuppressWarnings("unchecked")
     private void resize(int i) {
         T[] tmp = (T[]) new Object[i];
@@ -129,16 +133,16 @@ public class ArrayList<T> implements List<T>, Stack<T>, Queue<T>, Deque<T> {
     }
 
     @Override
-    @SafeVarargs
-    public final void addAll(T... elements) {
-        for(T t : elements) {
+    @SuppressWarnings("unchecked")
+    public void addAll(T... elements) {
+        for (T t : elements) {
             add(t);
         }
     }
 
     @Override
     public void set(int index, T element) {
-        if(isOutOfBounds(index))
+        if (isOutOfBounds(index))
             throw new IndexOutOfBoundsException("Index " + index + " out of bounds for range 0 to " + size);
         elements[index] = element;
     }
@@ -157,14 +161,14 @@ public class ArrayList<T> implements List<T>, Stack<T>, Queue<T>, Deque<T> {
 
     @Override
     public T get(int index) {
-        if(isOutOfBounds(index))
+        if (isOutOfBounds(index))
             throw new IndexOutOfBoundsException("Index " + index + " out of bounds for range 0 to " + size);
         return elements[index];
     }
 
     @Override
     public T remove(int index) {
-        if(isOutOfBounds(index))
+        if (isOutOfBounds(index))
             throw new IllegalStateException("Index " + index + " out of bounds for range 0 to " + size);
         pushTrailingElements(index + 1, index);
         T tmp = elements[size - 1];
@@ -179,8 +183,8 @@ public class ArrayList<T> implements List<T>, Stack<T>, Queue<T>, Deque<T> {
 
     @Override
     public void removeAll(T element) {
-        for(int i = 0; i < size; i++) {
-            if(get(i).equals(element)) {
+        for (int i = 0; i < size; i++) {
+            if (get(i).equals(element)) {
                 remove(i--);
             }
         }
@@ -195,24 +199,25 @@ public class ArrayList<T> implements List<T>, Stack<T>, Queue<T>, Deque<T> {
 
     @Override
     public boolean contains(T element) {
-        for(T t : this)
-            if(t.equals(element)) return true;
+        for (T t : this)
+            if (t.equals(element)) return true;
         return false;
     }
 
     @Override
     public int indexOf(T element) {
-        return IntStream.range(0,size)
+        return IntStream.range(0, size)
                 .filter(i -> get(i).equals(element))
                 .findFirst()
                 .orElseThrow(NoSuchElementException::new);
     }
+
     @Override
     public String toString() {
-        if(isEmpty())
+        if (isEmpty())
             return "[]";
         var sb = new StringBuilder("[");
-        for(T element : this)
+        for (T element : this)
             sb.append(element).append(", ");
         return sb.substring(0, sb.length() - 2) + "]";
     }
@@ -222,16 +227,18 @@ public class ArrayList<T> implements List<T>, Stack<T>, Queue<T>, Deque<T> {
         return size == 0;
     }
 
-    @Override public boolean equals(Object o) {
-        if(o == null)
+    @SuppressWarnings("UseOfConcreteClass")
+    @Override
+    public boolean equals(Object o) {
+        if (o == null)
             return false;
-        if(o == this)
+        if (o == this)
             return true;
-        if(o instanceof ArrayList<?> cast) {
-            if(cast.size() != size)
+        if (o instanceof ArrayList<?> cast) {
+            if (cast.size() != size)
                 return false;
             boolean equal = true;
-            for(int i = 0; equal && i < size; i++)
+            for (int i = 0; equal && i < size; i++)
                 equal = get(i).equals(cast.get(i));
             return equal;
         }
@@ -248,7 +255,7 @@ public class ArrayList<T> implements List<T>, Stack<T>, Queue<T>, Deque<T> {
     @Override
     public Iterator<T> iterator() {
         return new Iterator<>() {
-            int i = 0;
+            private int i = 0;
             @Override
             public boolean hasNext() {
                 return i < size;

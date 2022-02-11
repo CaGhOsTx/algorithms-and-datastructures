@@ -1,6 +1,5 @@
-package tests;
+package unit;
 
-import datastructures.DataStructure;
 import datastructures.List;
 import datastructures.lists.ArrayList;
 import org.testng.Assert;

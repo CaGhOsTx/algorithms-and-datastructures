@@ -1,7 +1,6 @@
-package tests;
+package integration;
 
 import datastructures.Stack;
-import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;

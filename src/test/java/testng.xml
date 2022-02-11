@@ -1,20 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd">
-<suite name="List tests">
-    <test thread-count="5" name="ArrayList">
-        <classes>
-            <class name="tests.ArrayExpansionTest"/>
-            <class name="factories.ALFactory"/>
-        </classes>
-    </test>
-    <test thread-count="5" name="Linked List">
-        <classes>
-            <class name="factories.LLFactory"/>
-        </classes>
-    </test>
-    <test thread-count="5" name="Doubly Linked List">
-        <classes>
-            <class name="factories.DLLFactory"/>
-        </classes>
-    </test>
+<suite name="Integration and Unit tests">
+    <suite-files>
+        <suite-file path="ArrayListUnit.xml"/>
+        <suite-file path="listIntegration.xml"/>
+    </suite-files>
 </suite>

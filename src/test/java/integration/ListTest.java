@@ -1,4 +1,4 @@
-package tests;
+package integration;
 
 import datastructures.List;
 import org.testng.Assert;
